@@ -10,9 +10,10 @@ class LinksBar extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      height: size.height * 0.05,
+      height: (size.width > 1000) ? size.height * 0.07 : null,
       color: Colors.black,
       child: const Wrap(
+        alignment: WrapAlignment.center,
         children: [
           LinkText(text: 'About'),
           LinkText(text: 'Help Center'),
