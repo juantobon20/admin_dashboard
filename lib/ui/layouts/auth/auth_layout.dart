@@ -2,6 +2,7 @@ import 'package:admin_dashboard/ui/layouts/auth/widgets/background_twitter.dart'
 import 'package:admin_dashboard/ui/layouts/auth/widgets/custom_title.dart';
 import 'package:admin_dashboard/ui/layouts/auth/widgets/links_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class AuthLayout extends StatelessWidget {
 
@@ -54,7 +55,7 @@ class _DesktopBody extends StatelessWidget {
         children: [
 
           //Twitter Background
-          const BackgroundTwitter(),
+          const Expanded(child: BackgroundTwitter()),
 
           //Content
           Container(
