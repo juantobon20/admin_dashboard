@@ -11,6 +11,14 @@ import 'package:provider/provider.dart';
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
 
+  void onSubmit(LoginFormProvider loginFormProvider, AuthProvider authProvider) {
+    if (!loginFormProvider.validateForm()) {
+      return;
+    }
+
+    authProvider.login(loginFormProvider.email, loginFormProvider.password);
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -50,6 +58,7 @@ class LoginView extends StatelessWidget {
                     const SizedBox(height: 20),
         
                     TextFormField(
+                      onFieldSubmitted: (_) => onSubmit(loginFormProvider, authProvider),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Ingrese su contraseña';
@@ -72,11 +81,7 @@ class LoginView extends StatelessWidget {
                     const SizedBox(height: 20),
         
                     CustomOutlinedButton(
-                      onPressed: () {
-                        if (loginFormProvider.validateForm()) {
-                          authProvider.login(loginFormProvider.email, loginFormProvider.password);
-                        }
-                      }, 
+                      onPressed: () => onSubmit(loginFormProvider, authProvider), 
                       text: 'Ingresar',
                     ),
         

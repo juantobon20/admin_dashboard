@@ -1,3 +1,4 @@
+import 'package:admin_dashboard/providers/auth_provider.dart';
 import 'package:admin_dashboard/providers/register_form_provider.dart';
 import 'package:admin_dashboard/router/router.dart';
 import 'package:admin_dashboard/ui/buttons/custom_outlined_button.dart';
@@ -91,7 +92,13 @@ class RegisterView extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       CustomOutlinedButton(
-                        onPressed: () => registerProvider.validateForm(), 
+                        onPressed: () {
+                          if (!registerProvider.validateForm()) {
+                            return;
+                          }
+
+                          Provider.of<AuthProvider>(context, listen: false).register(registerProvider.email, registerProvider.password, registerProvider.name);
+                        }, 
                         text: 'Crear cuenta',
                       ),
 

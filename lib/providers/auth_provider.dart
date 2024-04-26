@@ -1,6 +1,9 @@
+import 'package:admin_dashboard/api/cafe_api.dart';
+import 'package:admin_dashboard/models/http/auth_response.dart';
 import 'package:admin_dashboard/router/router.dart';
 import 'package:admin_dashboard/services/local_storage.dart';
 import 'package:admin_dashboard/services/navigation_service.dart';
+import 'package:admin_dashboard/services/notification_service.dart';
 import 'package:flutter/material.dart';
 
 enum AuthStatus {
@@ -13,20 +16,10 @@ enum AuthStatus {
 class AuthProvider extends ChangeNotifier {
 
   AuthStatus authStatus = AuthStatus.checking;
+  Usuario? user;
 
   AuthProvider() {
     isAuthenticated();
-  }
-
-
-  void login(String email, String password) {
-    const String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-    LocalStorage.prefs.setString('token', token);
-
-    authStatus = AuthStatus.authenticated;
-    notifyListeners();
-
-    NavigationService.navigateTo(Flurorouter.dashboardRoute);
   }
 
   Future<bool> isAuthenticated() async {
@@ -35,10 +28,73 @@ class AuthProvider extends ChangeNotifier {
       authStatus = AuthStatus.notAuthenticated;
       return false;
     }
-    //TODO: ir al backend 
-    await Future.delayed(const Duration(milliseconds: 1000));
-    authStatus = AuthStatus.authenticated;
+
+    try {
+      final resp = await CafeApi.httpGet('/auth');
+      final authResponse = AuthResponse.fromJson(resp);
+
+      LocalStorage.prefs.setString('token', authResponse.token);
+      user = authResponse.usuario;
+      authStatus = AuthStatus.authenticated;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      authStatus = AuthStatus.notAuthenticated;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  void logout() {
+    LocalStorage.prefs.remove('token');
+    authStatus = AuthStatus.notAuthenticated;
     notifyListeners();
-    return true;
+  }
+
+  void login(String email, String password) {
+    final data = {
+      'correo': email,
+      'password': password
+    };
+
+    CafeApi.post('/auth/login', data).then(
+      (json) {
+        final AuthResponse authResponse = AuthResponse.fromJson(json);
+        user = authResponse.usuario;
+
+        LocalStorage.prefs.setString('token', authResponse.token);
+        authStatus = AuthStatus.authenticated;
+        NavigationService.replaceTo(Flurorouter.dashboardRoute);
+
+        CafeApi.configureDio();
+        notifyListeners();
+      }
+    ).catchError((e) {
+      NotificationService.showSnackbarError('Usuario / Password no son válidos');
+    });
+  }
+
+  void register(String email, String password, String name) {
+    final data = {
+      'nombre': name,
+      'correo': email,
+      'password': password
+    };
+
+    CafeApi.post('/usuarios', data).then(
+      (json) {
+        final AuthResponse authResponse = AuthResponse.fromJson(json);
+        user = authResponse.usuario;
+
+        LocalStorage.prefs.setString('token', authResponse.token);
+        authStatus = AuthStatus.authenticated;
+        NavigationService.replaceTo(Flurorouter.dashboardRoute);
+        
+        CafeApi.configureDio();
+        notifyListeners();
+      }
+    ).catchError((e) {
+      NotificationService.showSnackbarError('Usuario / Password no son válidos');
+    });
   }
 }

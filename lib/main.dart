@@ -1,8 +1,10 @@
+import 'package:admin_dashboard/api/cafe_api.dart';
 import 'package:admin_dashboard/providers/auth_provider.dart';
 import 'package:admin_dashboard/providers/side_menu_provider.dart';
 import 'package:admin_dashboard/router/router.dart';
 import 'package:admin_dashboard/services/local_storage.dart';
 import 'package:admin_dashboard/services/navigation_service.dart';
+import 'package:admin_dashboard/services/notification_service.dart';
 import 'package:admin_dashboard/ui/layouts/auth/auth_layout.dart';
 import 'package:admin_dashboard/ui/layouts/dashboard/dashboard_layout.dart';
 import 'package:admin_dashboard/ui/layouts/splash/splash_layout.dart';
@@ -10,8 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  LocalStorage.configuratePrefs();
+  await LocalStorage.configuratePrefs();
   Flurorouter.configureRoutes();
+  CafeApi.configureDio();
 
   runApp(const AppState());
 } 
@@ -61,6 +64,7 @@ class MyApp extends StatelessWidget {
         return AuthLayout(child: child!);
       },
       navigatorKey: NavigationService.navigatorKey,
+      scaffoldMessengerKey: NotificationService.messengerKey,
       theme: ThemeData.light().copyWith(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         scrollbarTheme: const ScrollbarThemeData().copyWith(
