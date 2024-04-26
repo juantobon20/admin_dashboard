@@ -1,14 +1,24 @@
+import 'package:admin_dashboard/providers/side_menu_provider.dart';
+import 'package:admin_dashboard/router/router.dart';
+import 'package:admin_dashboard/services/navigation_service.dart';
 import 'package:admin_dashboard/ui/shared/widgets/logo.dart';
 import 'package:admin_dashboard/ui/shared/widgets/menu_item.dart';
 import 'package:admin_dashboard/ui/shared/widgets/text_separator.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
 class SideBar extends StatelessWidget {
   const SideBar({super.key});
 
+  void navigateTo(String routerName) {
+    SideMenuProvider.closeMenu();
+    NavigationService.navigateTo(routerName);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final SideMenuProvider provider = Provider.of<SideMenuProvider>(context);
     return Container(
       width: 200,
       height: double.infinity,
@@ -25,7 +35,8 @@ class SideBar extends StatelessWidget {
           MenuItem(
             text: 'Dashboard',
             icon: Icons.compass_calibration_outlined,
-            onPressed: () {}
+            isActive: provider.currentPage == Flurorouter.dashboardRoute,
+            onPressed: () => navigateTo(Flurorouter.dashboardRoute)
           ),
 
           MenuItem(
@@ -70,8 +81,9 @@ class SideBar extends StatelessWidget {
 
           MenuItem(
             text: 'Icons',
+            isActive: provider.currentPage == Flurorouter.iconsRoute,
             icon: Icons.list_alt_outlined,
-            onPressed: () {}
+            onPressed: () => navigateTo(Flurorouter.iconsRoute)
           ),
 
           MenuItem(
@@ -89,8 +101,13 @@ class SideBar extends StatelessWidget {
           MenuItem(
             text: 'Black',
             icon: Icons.post_add_outlined,
-            onPressed: () {}
+            isActive: provider.currentPage == Flurorouter.blankRoute,
+            onPressed: () => navigateTo(Flurorouter.blankRoute)
           ),
+
+          const SizedBox(height: 30),
+
+          const TextSeparator(text: 'Exit'),
 
           MenuItem(
             text: 'Logout',
