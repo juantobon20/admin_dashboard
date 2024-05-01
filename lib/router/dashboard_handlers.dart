@@ -6,6 +6,8 @@ import 'package:admin_dashboard/ui/views/category_view.dart';
 import 'package:admin_dashboard/ui/views/dashboard_view.dart';
 import 'package:admin_dashboard/ui/views/icons_view.dart';
 import 'package:admin_dashboard/ui/views/login_view.dart';
+import 'package:admin_dashboard/ui/views/user_view.dart';
+import 'package:admin_dashboard/ui/views/users_view.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -48,6 +50,30 @@ class DashboardHandlers {
 
     if (authProvider.authStatus == AuthStatus.authenticated) {
       return const CategoryView();
+    }
+    return const LoginView();
+  });
+
+  static Handler users = Handler(handlerFunc: (context, paramaters) {
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context!);
+    setCurrentPageUrl(context, Flurorouter.usersRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return const UsersView();
+    }
+    return const LoginView();
+  });
+
+  static Handler user = Handler(handlerFunc: (context, paramaters) {
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context!);
+    setCurrentPageUrl(context, Flurorouter.userRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      if (paramaters['uid']?.first != null) {
+        return UserView(uid: paramaters['uid']!.first);
+      } else {
+        return const UsersView();
+      }
     }
     return const LoginView();
   });
