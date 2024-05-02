@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:admin_dashboard/services/local_storage.dart';
 import 'package:dio/dio.dart';
 
@@ -49,6 +51,19 @@ class CafeApi {
       return resp.data;
     } catch (e) {
       throw('Error en el PUT');
+    }
+  }
+
+  static Future<dynamic> uploadFiled(String path, Uint8List bytes) async {
+    final formData = FormData.fromMap({
+      'archivo': MultipartFile.fromBytes(bytes)
+    });
+
+    try {
+      final resp = await _dio.put(path, data: formData);
+      return resp.data;
+    } catch (e) {
+      throw('Error en el UploadFile');
     }
   }
 }
